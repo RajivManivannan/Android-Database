@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.reeuse.db.UserContract.UserEntry;
+import com.reeuse.db.UserContract.UserTable;
 
 /**
  * DatabaseHelper.java
@@ -35,17 +35,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createQuery = "CREATE TABLE " + UserEntry.TABLE_NAME + "(" +
-                UserEntry._ID + " INTEGER PRIMARY KEY," +
-                UserEntry.COLUMN_NAME_USER_NAME + " TEXT," +
-                UserEntry.COLUMN_NAME_USER_DESIGNATION + " TEXT" + ")";
+        String createQuery = "CREATE TABLE " + UserTable.TABLE_NAME + "(" +
+                UserTable._ID + " INTEGER PRIMARY KEY," +
+                UserTable.COLUMN_NAME_USER_NAME + " TEXT," +
+                UserTable.COLUMN_NAME_USER_DESIGNATION + " TEXT" + ")";
         Log.i(TAG, createQuery);
         db.execSQL(createQuery);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropQuery = "DROP TABLE IF EXISTS " + UserEntry.TABLE_NAME;
+        String dropQuery = "DROP TABLE IF EXISTS " + UserTable.TABLE_NAME;
         db.execSQL(dropQuery);
     }
 
@@ -85,7 +85,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return writableDatabase;
     }
- //-------------------------------------------------------------Insert----------------------------------------------------------------//
+    //-------------------------------------------------------------Insert----------------------------------------------------------------//
     /**
      * To insert users in the table
      *
@@ -96,30 +96,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public long insertUser(String userName, String designation) {
         SQLiteDatabase database = getWritableDb();
         ContentValues values = new ContentValues();
-        values.put(UserEntry.COLUMN_NAME_USER_NAME, userName);
-        values.put(UserEntry.COLUMN_NAME_USER_DESIGNATION, designation);
-        return database.insert(UserEntry.TABLE_NAME, null, values);
+        values.put(UserTable.COLUMN_NAME_USER_NAME, userName);
+        values.put(UserTable.COLUMN_NAME_USER_DESIGNATION, designation);
+        return database.insert(UserTable.TABLE_NAME, null, values);
     }
 
     //-------------------------------------------------------------Select----------------------------------------------------------------//
     /**
      * To select all the user from database.
      */
-    public void selectUser() {
+    public Cursor selectUser() {
         SQLiteDatabase database = getReadableDb();
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {
-                UserEntry._ID,
-                UserEntry.COLUMN_NAME_USER_NAME,
-                UserEntry.COLUMN_NAME_USER_DESIGNATION
+                UserTable._ID,
+                UserTable.COLUMN_NAME_USER_NAME,
+                UserTable.COLUMN_NAME_USER_DESIGNATION
         };
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                UserEntry.COLUMN_NAME_USER_NAME + " DESC";
+                UserTable.COLUMN_NAME_USER_NAME + " ASC";
         Cursor cursor = database.query(
-                UserEntry.TABLE_NAME,  // The table to query
+                UserTable.TABLE_NAME,  // The table to query
                 projection,    // The columns to return
                 null,   // The columns for the WHERE clause (selection)
                 null,   // The values for the WHERE clause (selectionArgs)
@@ -127,16 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,  // don't filter by row groups
                 sortOrder  // The sort order
         );
-        cursor.moveToFirst();
-        int i = 0;
-        while (!cursor.isAfterLast()) {
-            Log.i(TAG, cursor.getLong(cursor.getColumnIndexOrThrow(UserEntry._ID))+"");
-            Log.i(TAG, cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_USER_NAME)));
-            Log.i(TAG, cursor.getString(cursor.getColumnIndexOrThrow(UserEntry.COLUMN_NAME_USER_DESIGNATION)));
-            cursor.moveToNext();
-            i++;
-        }
-        cursor.close(); // Close cursor object.
+       return cursor;
     }
 
     //-------------------------------------------------------------Update----------------------------------------------------------------//
@@ -146,22 +137,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param userName
      * @param rowId
      */
-    public void updateUser(String userName, int rowId) {
+    public int updateUser(String userName, int rowId) {
         SQLiteDatabase db = getWritableDb();
 
         // New value for one column
         ContentValues values = new ContentValues();
-        values.put(UserEntry.COLUMN_NAME_USER_NAME, userName);
+        values.put(UserTable.COLUMN_NAME_USER_DESIGNATION, userName);
 
         // Which row to update, based on the ID
-        String selection = UserEntry._ID + " LIKE ?";
+        String selection = UserTable._ID + " LIKE ?";
         String[] selectionArgs = {String.valueOf(rowId)};
 
-        int count = db.update(
-                UserEntry.TABLE_NAME,
+        return db.update(
+                UserTable.TABLE_NAME,
                 values,
                 selection,
                 selectionArgs);
+
     }
 
     //-------------------------------------------------------------Delete----------------------------------------------------------------//
@@ -169,14 +161,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * To delete the particular user using user id.
      * @param userId
      */
-    public void deleteUser(int userId) {
+    public int  deleteUser(int userId) {
         SQLiteDatabase db = getWritableDb();
         // Define 'where' part of query.
-        String selection = UserEntry._ID + " LIKE ?";
-       // Specify arguments in placeholder order.
+        String selection = UserTable._ID + " LIKE ?";
+        // Specify arguments in placeholder order.
         String[] selectionArgs = {String.valueOf(userId)};
-         // Issue SQL statement.
-        int count = db.delete(UserEntry.TABLE_NAME, selection, selectionArgs);
+        // Issue SQL statement.
+        return db.delete(UserTable.TABLE_NAME, selection, selectionArgs);
     }
 
 }

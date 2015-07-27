@@ -3,4 +3,15 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="user_name_hint">Name</string>
+    <string name="designation_hint">Designation</string>
+    <string name="where_condition_hint">Where Condition Row ID / User ID</string>
+    <string name="insert_btn_text">Insert</string>
+    <string name="update_btn_text">Update</string>
+    <string name="delete_btn_text">Delete</string>
+
+    <string name="main_successfully_updated">Successfully Updated</string>
+    <string name="main_successfully_inserted">Successfully Inserted</string>
+    <string name="main_successfully_deleted">Successfully Deleted</string>
+    <string name="main_error_occurred">Error Occurred</string>
 </resources>
